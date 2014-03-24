@@ -24,8 +24,6 @@ struct sTreeNode *tree_minimum(const struct sTreeNode *);
 struct sTreeNode *tree_maximum(const struct sTreeNode *);
 struct sTreeNode *tree_predecessor(const struct sTree *, const struct sTreeNode *);
 struct sTreeNode *tree_successor(const struct sTree *, const struct sTreeNode *);
-void tree_insert(struct sTree *, struct sTreeNode *);
-void tree_transplant(struct sTree *, struct sTreeNode *, struct sTreeNode *);
 void tree_delete(struct sTree *, struct sTreeNode *);
 
 struct sTreeNode *new_tree_node(void *);
