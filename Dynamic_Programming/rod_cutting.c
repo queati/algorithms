@@ -58,11 +58,25 @@ void dp(int num, int lgh, int *pri, int *len, int *rcd, int *count)
 	for (i = 1; i <= lgh; i++)
 		count[i] = -INT_MAX;
 
+/*
+ * Solution 1: Add a (li, pi) each time
 	for (i = 0; i < num; i++)
 		for (j = len[i]; j <= lgh; j++)
 			if (count[j - len[i]] + pri[i] > count[j]) {
 				count[j] = count[j - len[i]] + pri[i];
 				rcd[j] = len[i];
+			}
+*/
+
+
+/*
+ * Solution 2: Add the length of rod to cut with 1 each time
+ */
+ 	for (i = 1; i <= lgh; i++)
+		for (j = 0; j < num; j++)
+			if (i >= len[j] && count[i - len[j]] + pri[j] > count[i]) {
+				count[i] = count[i - len[j]] + pri[j];
+				rcd[i] = len[j];
 			}
 }
 
