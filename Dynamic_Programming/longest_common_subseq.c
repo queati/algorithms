@@ -29,6 +29,15 @@ int main()
 	return 0;
 }
 
+/*
+ * if str1[i] = str2[j] common(str1[0..i], str2[0..j]) = common(str1[0..i-1], str2[0..j-1]) + 1
+ * else common(str1[0..i], str2[0..j]) 
+ *		= max(common(str1[0..i], str2[0..j-1]), common(str1[0..i-1],common(str2[0..j])))
+ *
+ * If there are limitation about memory usage, we can use count[2][LEN_MAX] or even count[LEN_MAX]
+ * instead of count[LEN_MAX][LEN_MAX], pay attention to the initialization of count[j][0],
+ * there should initilize in the correct position instead of the current place
+ */
 void dp(char *str1, char *str2, char (*rcd)[LEN_MAX], int (*count)[LEN_MAX])
 {
 	int i, j;
