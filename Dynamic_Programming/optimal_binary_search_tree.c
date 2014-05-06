@@ -73,16 +73,31 @@ void initArr(int num, float *keypbt, float *dumKeypbt, \
  * cost[i][j] = min(i <= k <= j){cost[i][k - 1] + cost[k + 1][j] + weight[i, j]}
  * Pay Attention to this formula when k = i and k = j
  * cost[i][i - 1] = dumKeypbt[i] and cost[j + 1][j] = dumKeypbt[j + 1]
+ *
+ * According to 15.5-4, Knuth has shown that there are always roots of 
+ * optimal subtrees such that choice[i, j-1] <= choice[i, j] <= 
+ * choice[i+1, j]. Use this method, we can modify the procedure to run
+ * in O(n*n).
  */
 void dp(int num, float *keypbt, float *dumKeypbt, int (*choice)[KEY_MAX] \
 		, float (*cost)[KEY_MAX], float (*weight)[KEY_MAX])
 {
 	int i, j, l, k;
+	int low, high;
 
 	for (l = 0; l < num; l++)
 		for (i = 0; i < num - l; i++) {
 			j = i + l;
-			for (k = i; k <= j; k++)
+			if (j - 1 >= i)
+				low = choice[i][j - 1];
+			else
+				low = i;
+			if (j >= i + 1)
+				high = choice[i + 1][j];
+			else
+				high = j;
+			for (k = low; k <= high; k++)
+//			for (k = i; k <= j; k++)
 				if (cost[i][j] > (getCost(i, k - 1, cost, dumKeypbt) + \
 						getCost(k + 1, j, cost, dumKeypbt) + weight[i][j])) {
 					cost[i][j] = (getCost(i, k - 1, cost, dumKeypbt) + \
@@ -99,24 +114,28 @@ float getCost(int low, int high, float (*cost)[KEY_MAX], float *dumKeypbt)
 
 void output(int num, float (*cost)[KEY_MAX], int (*choice)[KEY_MAX])
 {
-	int i, j;
+	int i, j, l;
 
 	printf("The average miminum number of nodes visited per search \
 		is %f\n", cost[0][num - 1]);
 	printf("The cost matrix:\n");
-	for (i = num - 1; i >= 0; i--) {
-		for (j = 0; j < i; j++)
+	for (l = num - 1; l >= 0; l--) {
+		for (j = 0; j < l; j++)
 			printf("\t");
-		for (j = i; j < num; j++)
-			printf("%8.2f", cost[num - 1 - j][i]);
+		for (i = 0; i < num - l; i++) {
+			j = i + l;
+			printf("%16.2f", cost[i][j]);
+		}
 		printf("\n");
 	}
 	printf("The choice matrix:\n");
-	for (i = num - 1; i >= 0; i--) {
-		for (j = 0; j < i; j++)
+	for (l = num - 1; l >= 0; l--) {
+		for (j = 0; j < l; j++)
 			printf("\t");
-		for (j = i; j < num; j++)
-			printf("%8d", choice[num - 1 - j][i]);
+		for (i = 0; i < num - l; i++) {
+			j = i + l;
+			printf("%16d", choice[i][j]);
+		}
 		printf("\n");
 	}
 }
