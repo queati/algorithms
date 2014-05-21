@@ -7,7 +7,7 @@
  * Input: the number of activities N
  *		  and then N lines, each contain a Si and a Fi
  * Output: the maximum size subset of mutually compatible activities
- * 		   and their num.
+ * 		   and their No.
  */
 
 #include <stdio.h>
@@ -15,118 +15,92 @@
 
 #define AVT_MAX 100
 
-void input(int, int *, int *, int *);
-int choose_avt(int, int *, int *, int *, int *);
-void output(int, int *, int *, int *, int *);
-void outputArr(int, int *, int *, int *);
-void quickSort(int, int, int *, int *, int *);
-int partition(int, int, int *, int *, int *);
+struct Activity {
+	int no;
+	int start_time;
+	int end_time;
+	char choosed;
+};
+
+struct AVTs {
+	int activity_num;
+	struct Activity activity[AVT_MAX];
+};
+
+extern void myqSort(void *base, size_t num, size_t width, \
+					int64_t (*cmp)(const void *, const void *));
+void initAVTs(struct AVTs *, int);
+void input(struct AVTs *);
+void choose_avt(struct AVTs *);
+void output(struct AVTs *);
+
 
 int main(void)
 {
-	int num, ans;
-	int srt[AVT_MAX], end[AVT_MAX], no[AVT_MAX];
-	int choice[AVT_MAX];
+	int num;
+	struct AVTs avts;
 
 	while (scanf("%d", &num) != EOF) {
-		input(num, srt, end, no);
-		ans = choose_avt(num, srt, end, choice, no);
-		output(ans, srt, end, choice, no);
+		initAVTs(&avts, num);
+		input(&avts);
+		choose_avt(&avts);
+		output(&avts);
 	}
 
 	return 0;
 }
 
-void input(int num, int *srt, int *end, int *no)
+void initAVTs(struct AVTs *avts, int num)
 {
 	int i;
 
-	for (i = 0; i < num; i++)
-		scanf("%d", &srt[i]);
-	for (i = 0; i < num; i++)
-		scanf("%d", &end[i]);
-	for (i = 0; i < num; i++)
-		no[i] = i + 1;
+	avts->activity_num = num;
+	for (i = 0; i < avts->activity_num; i++) {
+		avts->activity[i].no = i;
+		avts->activity[i].choosed = 'n';
+	}
 }
 
-int choose_avt(int num, int *srt, int *end, int *choice, int *no)
+void input(struct AVTs *avts)
 {
-	int i, k;
-	int ans, time;
+	int i;
+	int start, end;
 
-	ans = 0;
-	time = 0;
-	quickSort(0, num - 1, srt, end, no);
-	outputArr(num, srt, end, no);
-	for (i = 0; i < num; i++) {
-		if (time < srt[i]) {
-			time = end[i];
-			choice[ans++] = i;
+	for (i = 0; i < avts->activity_num; i++) {
+		scanf("%d %d", &start, &end);
+		avts->activity[i].start_time = start;
+		avts->activity[i].end_time = end;
+	}
+}
+
+int64_t compare(const void *elem1, const void *elem2)
+{
+	return ((struct Activity *)elem1)->end_time - \
+			((struct Activity *)elem2)->end_time;
+}
+	
+void choose_avt(struct AVTs *avts)
+{
+	int i;
+	int time;
+
+	myqSort(avts->activity, avts->activity_num, \
+			sizeof(struct Activity), compare);
+	for (i = 0, time = 0; i < avts->activity_num; i++) {
+		if (time <= avts->activity[i].start_time) {
+			time = avts->activity[i].end_time;
+			avts->activity[i].choosed = 'y';
 		}
 	}
-	return ans;
 }
 
-void outputArr(int num, int *srt, int *end, int *no)
+void output(struct AVTs *avts)
 {
 	int i;
 
-	printf("After sort by end time of each activity:\n");
-	for (i = 0; i < num; i++)
-		printf("activity %d, %d -- %d\n", no[i], srt[i], end[i]);
-	printf("\n");
-}
-
-void output(int ans, int *srt, int *end, int *choice, int *no)
-{
-	int i;
-
-	printf("The maximum size subset of mutually compatible activities \
-	have %d activities:\n", ans);
-	for (i= 0; i < ans; i++) {
-		printf("\tactivity %d, %d -- %d\n", no[choice[i]], \
-				srt[choice[i]], end[choice[i]]);
-	}
-	printf("\n");
-}
-
-void quickSort(int low, int high, int *srt, int *end, int *no)
-{
-	int pos;
-
-	if (low >= high)
-		return ;
-
-	pos = partition(low, high, srt, end, no);
-	quickSort(low, pos - 1, srt, end, no);
-	quickSort(pos + 1, high, srt, end, no);
-}
-
-int partition(int low, int high, int *srt, int *end, int *no)
-{
-	int i, j;
-	int temp, temp2, temp3;
-
-	i = low;
-	j = high;
-	temp = end[low];
-	temp2 = srt[low];
-	temp3 = no[low];
-	while (i < j) {
-		while (i < j && end[j] >= temp)
-			j--;
-		end[i] = end[j];
-		srt[i] = srt[j];
-		no[i] = no[j];
-		while (i < j && end[i] <= temp)
-			i++;
-		end[j] = end[i];
-		srt[j] = end[i];
-		no[j] = no[i];
-	}
-	end[i] = temp;
-	srt[i] = temp2;
-	no[i] = temp3;
-
-	return i;
+	for (i = 0; i < avts->activity_num; i++)
+		if (avts->activity[i].choosed == 'y')
+			printf("choose acticity %d, from %d to %d\n", \
+					avts->activity[i].no + 1, avts->activity[i].start_time, \
+					avts->activity[i].end_time);
 }
