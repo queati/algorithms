@@ -15,144 +15,99 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define VER_MAX 100
-#define EDG_MAX 1000
+#include "macros.h"
+#include "minimum_spanning_tree.h"
 
-struct Edge {
+struct EdgeInfo { 
 	int from;
 	int to;
-	int weight;
+	double weight;
 };
 
-struct Tree {
-	int node_num;
+struct AllEdge {
 	int edge_num;
-	struct Edge edge[EDG_MAX];
+	struct EdgeInfo edges[EDG_MAX];
 };
+	
+extern void myqSort(void *base, size_t num, size_t width, \
+					int64_t (*cmp)(const void *, const void *));
+extern void chooseEdge(struct Graph *, int, int);
 
-void make_set(int, int *);
-int find_set(int, int *);
-void union_set(int, int, int *);
-void input(int, int, struct Tree *, int *);
-int kruskal(struct Tree *, int *);
-void quickSort(struct Edge *, int, int);
-int partition(struct Edge *, int, int);
-void copyEdge(struct Edge *, struct Edge *);
 
-int main(void)
+void initAllEdge(struct AllEdge *allEdge)
 {
-	int node_num, edge_num;
-	int ans;
-	int set[VER_MAX];
-	struct Tree tree;
-
-	while (scanf("%d %d", &node_num, &edge_num) != EOF) {
-		input(node_num, edge_num, &tree, set);
-		ans = kruskal(&tree, set);
-		printf("The weight of minimum spanning tree is %d\n", ans);
-	}
-
-	return 0;
+	allEdge->edge_num = 0;
 }
 
-void input(int node_num, int edge_num, struct Tree *tree, int *set)
+void findAllEdge(struct Graph *graph, struct AllEdge *allEdge)
 {
 	int i;
-	int from, to, weight;
+	struct Edge *edge; 
+	struct EdgeInfo edgeInfo;
 
-	tree->node_num = node_num;
-	tree->edge_num = edge_num;
-	for (i = 1; i <= edge_num; i++) {
-		scanf("%d %d %d", &from, &to, &weight);
-		tree->edge[i].from = from;
-		tree->edge[i].to = to;
-		tree->edge[i].weight = weight;
+	for (i = 1; i <= graph->node_num; i++) {
+		edge = graph->node[i].start;
+		while (edge) {
+			if (i < edge->to) {
+				edgeInfo.from = i;
+				edgeInfo.to = edge->to;
+				edgeInfo.weight = edge->weight;
+				allEdge->edges[allEdge->edge_num++] = edgeInfo;
+			}
+			edge = edge->next;
+		}
 	}
-	for (i = 1; i <= node_num; i++)
-		make_set(i, set);
 }
 
-int kruskal(struct Tree *tree, int *set)
+int64_t compare(const void *elem1, const void *elem2)
 {
-	int i, j;
-	int ans;
-
-	ans = 0;
-
-	quickSort(tree->edge, 1, tree->edge_num);
-	for (i = 1, j = 1; i < tree->node_num; i++) {
-		while (find_set(tree->edge[j].from, set) == \
-				find_set(tree->edge[j].to, set))
-			j++;
-		union_set(tree->edge[j].from, tree->edge[j].to, set);
-		ans += tree->edge[j].weight;
-		printf("choose edge from %d to %d\n", tree->edge[j].from, \
-											tree->edge[j].to);
-		j++;
-	}
-	return ans;
+	return ((struct EdgeInfo *)elem1)->weight - \
+			((struct EdgeInfo *)elem2)->weight;
 }
 
-void quickSort(struct Edge *edge, int low, int high)
-{
-	int pos;
-
-	if (low >= high)
-		return ;
-	pos = partition(edge, low, high);
-	quickSort(edge, low, pos - 1);
-	quickSort(edge, pos + 1, high);
-}
-
-int partition(struct Edge *edge, int low, int high)
-{
-	int i, j;
-	struct Edge tmp;
-
-	i = low;
-	j = high;
-	copyEdge(&edge[i], &tmp);
-	while (i < j) {
-		while (i < j && edge[j].weight >= tmp.weight)
-			j--;
-		copyEdge(&edge[j], &edge[i]);
-		while (i < j && edge[i].weight <= tmp.weight)
-			i++;
-		copyEdge(&edge[i], &edge[j]);
-	}
-	copyEdge(&tmp, &edge[i]);
-	return i;
-}
-
-void copyEdge(struct Edge *src, struct Edge *dst)
-{
-	dst->from = src->from;
-	dst->to= src->to;
-	dst->weight = src->weight;
-}
-
-void make_set(int pos, int *set)
+void makeSet(int pos, int *set)
 {
 	set[pos] = pos;
 }
 
-int find_set(int pos, int *set)
+int findSet(int pos, int *set)
 {
-	int ans;
+	while (pos != set[pos])
+		pos = set[pos];
 
-	ans = pos;
-	while (ans != set[ans])
-		ans = set[ans];
-	return ans;
+	return pos;
 }
 
-void union_set(int pos1, int pos2, int *set)
+void unionSet(int pos1, int pos2, int *set)
+{
+	set[pos1] = findSet(pos2, set);
+}
+
+void initMakeSet(struct Graph *graph, int *set)
+{
+	int i;
+
+	for (i = 1; i <= graph->node_num; i++)
+		makeSet(i, set);
+}
+
+void kruskal(struct Graph *graph)
 {
 	int i, j;
+	int set[VER_MAX];
+	struct AllEdge allEdge;
 
-	i = find_set(pos1, set);
-	j = find_set(pos2, set);
+	initAllEdge(&allEdge);
+	findAllEdge(graph, &allEdge);
+	initMakeSet(graph, set);
+	myqSort(allEdge.edges, allEdge.edge_num, sizeof(struct EdgeInfo), compare);
 
-	if (i != j)
-		set[i] = j;
+	for (i = 1, j = 0; i < graph->node_num && j < allEdge.edge_num; i++) {
+		while (findSet(allEdge.edges[j].from, set) == \
+				findSet(allEdge.edges[j].to, set))
+			j++;
+		chooseEdge(graph, allEdge.edges[j].from, allEdge.edges[j].to);
+		unionSet(allEdge.edges[j].from, allEdge.edges[j].to, set);
+	}
 }
+	

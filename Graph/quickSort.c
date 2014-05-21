@@ -23,8 +23,6 @@ size_t partition(void *base, size_t low, size_t high, size_t width,\
 void myqSort(void *base, size_t num, size_t width,\
 				int64_t (*comp)(const void *, const void *))
 {
-	int pos;
-		
 	if (!comp)
 		comp = __compare_by_point;
 
