@@ -17,11 +17,7 @@
 #include "minimum_spanning_tree.h"
 
 extern double kruskal(struct Graph *);
-
-void initGraph(struct Graph *, int);
-void input(struct Graph *, int);
-void chooseEdge(struct Graph *, int, int);
-void deleteEdge(struct Graph *);
+extern double prim(struct Graph *);
 
 int main(void)
 {
@@ -34,8 +30,12 @@ int main(void)
 		input(&graph, edge_num);
 		printf("kruskal:\n");
 		ans = kruskal(&graph);
-		printf("the MST weights %lf\n", ans);
+		printf("the MST weights %.2lf\n", ans);
+		clearChoosedEdge(&graph);
 
+		printf("prim:\n");
+		ans = prim(&graph);
+		printf("the MST weights %.2lf\n", ans);
 		deleteEdge(&graph);
 	}
 
@@ -89,7 +89,7 @@ void chooseEdge(struct Graph *graph, int from, int to)
 	if (!edge)
 		log(E, "can't find corresponding edge!");
 	edge->choosed = 'y';
-	printf("choose a saft edge from %d to %d, weight %.2lf\n", \
+	printf("choose a safe edge from %d to %d, weight %.2lf\n", \
 			from, to, edge->weight);
 }
 
@@ -104,6 +104,20 @@ void deleteEdge(struct Graph *graph)
 			graph->node[i].start = edge->next;
 			free(edge);
 			edge = graph->node[i].start;
+		}
+	}
+}
+
+void clearChoosedEdge(struct Graph *graph)
+{
+	int i;
+	struct Edge *edge;
+
+	for (i = 1; i <= graph->node_num; i++) {
+		edge = graph->node[i].start;
+		while (edge) {
+			edge->choosed = 'n';
+			edge = edge->next;
 		}
 	}
 }
