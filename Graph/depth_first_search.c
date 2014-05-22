@@ -12,7 +12,7 @@
 #include "graph_traverse.h"
 
 extern int time;
-extern void visitNode(struct Graph *, int);
+//extern void visitNode(struct Graph *, int);
 
 void dfsRecordTime(struct Graph *graph, int node)
 {
@@ -27,7 +27,8 @@ void dfsRecordTime(struct Graph *graph, int node)
 	graph->node[node].end_time = time++;
 }
 
-void dfs(struct Graph *graph, int node)
+void dfs(struct Graph *graph, int node, \
+		void (*visitNode)(struct Graph *, int))
 {
 	struct Edge *edge;
 	
@@ -36,5 +37,5 @@ void dfs(struct Graph *graph, int node)
 	graph->node[node].visited = 'y';
 	for (edge = graph->node[node].start; edge != NULL; edge = edge->next)
 		if (graph->node[edge->to].visited == 'n')
-			dfs(graph, edge->to);
+			dfs(graph, edge->to, visitNode);
 }

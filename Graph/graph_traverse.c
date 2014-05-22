@@ -13,7 +13,8 @@
 #include "graph_traverse.h"
 #include "macros.h"
 
-extern void dfs(struct Graph *graph, int node);
+extern void dfs(struct Graph *graph, int node, \
+				void (*visitNode)(struct Graph *, int));
 extern void bfs(struct Graph *graph, int node);
 extern void topos(struct Graph *graph);
 
@@ -33,7 +34,7 @@ int main(void)
 		printf("source node of dfs and bfs is %d:\n", source);
 		printf("depth first search:\n");
 		for (source = 1; source <= graph.node_num; source++)
-			dfs(&graph, source);
+			dfs(&graph, source, visitNode);
 		clearVisit(&graph);	
 
 		printf("breadth first search:\n");
