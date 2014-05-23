@@ -1,2 +1,4 @@
-# Using for practice data structure and algorithms.
-# All these codes are written in C.
+## algorithms
+
+All this code is written in C.
+
