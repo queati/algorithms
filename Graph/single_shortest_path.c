@@ -1,5 +1,8 @@
 /*
- *  
+ *  In a shortest-paths problem, we are given a wighted, directed
+ *  graph G = (V, E), with weight of all edges. We want to find
+ *  a shortest path from a given source vertex s to each vertex 
+ *  in V.
  */
 
 #include <stdio.h>
