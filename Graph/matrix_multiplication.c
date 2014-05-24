@@ -1,5 +1,11 @@
 /*
- *
+ * This program use a dynamic-programming algorithm for the all-pairs
+ * shortest paths problem on a directed graph G = (V, E).
+ * As we know, all subpaths of a shortest path are shortest paths, and
+ * the shortest path from a vertex to another vertex have at most |V-1|
+ * Edges.
+ * Using the idea of dynamic programming, we can consider the problem of
+ * shortest path contains at most i edges each time.(0 <= i <= |V - 1|)
  */
 
 #include <stdio.h>
