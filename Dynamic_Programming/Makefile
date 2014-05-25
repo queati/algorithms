@@ -1,9 +1,9 @@
-rod_cutting: rod_cutting.o
-	cc -o rod_cutting rod_cutting.o
+optimal_binary_search_tree: optimal_binary_search_tree.o
+	cc -o optimal_binary_search_tree optimal_binary_search_tree.o
 
-rod_cutting.o: rod_cutting.c
-	cc -c -g rod_cutting.c
+optimal_binary_search_tree.o: optimal_binary_search_tree.c
+	cc -c -g optimal_binary_search_tree.c
 
 .PHONY: clean
 clean:
-	rm -f *.o *~ rod_cutting
+	rm -f *.o *~ optimal_binary_search_tree
