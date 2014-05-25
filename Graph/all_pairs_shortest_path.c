@@ -11,6 +11,8 @@
 #include "all_pairs_shortest_path.h"
 
 extern void matrix_mult(struct Matrix_Graph *graph);
+extern void floyd_warshall(struct Matrix_Graph *graph);
+extern void johnson(struct Matrix_Graph *, struct Point_Graph *);
 
 int main(void)
 {
@@ -25,6 +27,15 @@ int main(void)
 		matrix_mult(&mat_graph);
 		output(&mat_graph);
 		clearChoose(&mat_graph, &poi_graph);
+
+		printf("floyd warshall:\n");
+		floyd_warshall(&mat_graph);
+		output(&mat_graph);
+		clearChoose(&mat_graph, &poi_graph);
+
+		printf("johnson:\n");
+		johnson(&mat_graph, &poi_graph);
+		output(&mat_graph);
 		
 		clearEdge(&poi_graph);
 	}
@@ -64,9 +75,12 @@ void clearChoose(struct Matrix_Graph *mat_graph, \
 	int i, j;
 
 	for (i = 1; i <= mat_graph->node_num; i++) {
-		for (j = 1; j <= mat_graph->node_num; j++)
+		for (j = 1; j <= mat_graph->node_num; j++) {
 			mat_graph->precusor[i][j] = -1;
+			mat_graph->shortest_matrix[i][j] = INT_MAX;
+		}
 		mat_graph->precusor[i][i] = i;
+		mat_graph->shortest_matrix[i][i] = 0;
 	}
 
 	for (i = 1; i <= poi_graph->node_num; i++)
@@ -88,6 +102,7 @@ void input(struct Matrix_Graph *mat_graph, \
 		edge = alloc(struct Edge, 1);
 		edge->to = to;
 		edge->weight = weight;
+		edge->newWeight = weight;
 		edge->next = poi_graph->node[from].start;
 		poi_graph->node[from].start = edge;
 	}
