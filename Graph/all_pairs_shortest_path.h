@@ -13,6 +13,7 @@ struct Matrix_Graph {
 struct Edge {
 	int to;
 	double weight;
+	double newWeight;
 	struct Edge *next;
 };
 
