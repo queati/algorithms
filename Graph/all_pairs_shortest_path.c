@@ -105,6 +105,7 @@ void input(struct Matrix_Graph *mat_graph, \
 		edge->newWeight = weight;
 		edge->next = poi_graph->node[from].start;
 		poi_graph->node[from].start = edge;
+		mat_graph->precusor[from][to] = from;
 	}
 }
 

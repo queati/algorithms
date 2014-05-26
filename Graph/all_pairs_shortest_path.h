@@ -7,7 +7,9 @@ struct Matrix_Graph {
 	int node_num;
 	double adjcent_matrix[VER_MAX][VER_MAX];
 	double shortest_matrix[VER_MAX][VER_MAX];
+	double tmp_matrix[VER_MAX][VER_MAX];
 	int precusor[VER_MAX][VER_MAX];
+	int tmp_precusor[VER_MAX][VER_MAX];
 };
 
 struct Edge {
