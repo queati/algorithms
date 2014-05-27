@@ -1,6 +1,31 @@
 ##Graph
 
+<br><br>
 
+####[Graph Traverse](http://en.wikipedia.org/wiki/Graph_traversal)
+
+>  Graph traversal is the problem of visiting all the nodes in a graph in a particular manner, updating and/or checking their values along the way.
+
+<br>
+
+####[Minimum Spanning Tree](http://en.wikipedia.org/wiki/Minimum_spanning_tree)
+
+> Given a connected, undirected graph, a spanning tree of that graph is a subgraph that is a tree and connects all the vertices together.
+> A minimum spanning tree (MST) or minimum weight spanning tree is then a spanning tree with weight less than or equal to the weight of every other spanning tree. 
+
+<br>
+
+####[Single Shortest Path](http://en.wikipedia.org/wiki/Shortest_path_problem#Single-source_shortest_paths)
+
+> The single shortest path problem is the problem of finding a path between a source vertex and another vertex (or node) in a graph such that the sum of the weights of its constituent edges is minimized.
+
+<br>
+
+####[All pairs shortest Path](http://en.wikipedia.org/wiki/Shortest_path_problem#All-pairs_shortest_paths)
+
+>  The all pairs shortest path problem is the problem of finding a path between two vertices (or nodes) in a graph such that the sum of the weights of its constituent edges is minimized.
+
+<br>
 
     /Graph
     |--- graph traverse
