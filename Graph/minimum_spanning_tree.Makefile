@@ -1,7 +1,7 @@
 minimum_spanning_tree: minimum_spanning_tree.o kruskal.o quickSort.o \
-			prim.o heapSort.o boruvka.o
+			prim.o heapSort.o boruvka.o reverse_delete.o
 	cc -o minimum_spanning_tree minimum_spanning_tree.o kruskal.o \
-				quickSort.o prim.o heapSort.o boruvka.o
+				quickSort.o prim.o heapSort.o boruvka.o reverse_delete.o
 
 minimum_spanning_tree.o: minimum_spanning_tree.c minimum_spanning_tree.h \
 						 macros.h
@@ -21,6 +21,9 @@ heapSort.o: heapSort.c
 
 boruvka.o: boruvka.c
 	cc -c -Wall -g boruvka.c
+
+reverse_delete.o: reverse_delete.c
+	cc -c -Wall -g reverse_delete.c
 
 .PHONY: clean
 clean:
