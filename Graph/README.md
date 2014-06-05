@@ -36,7 +36,9 @@
     		|--- graph_traverse.Makefile
     |--- minimum spanning tree
     		|--- minimum_spanning_tree.h minimum_spanning_tree.c
+			|--- boruvka.c
     		|--- kruskal.c
+			|--- reverse_delete.c
     		|--- prim.c
     		|--- minimum_spanning_tree.Makefile
     |--- single shortest path
