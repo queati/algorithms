@@ -28,11 +28,48 @@ struct AllEdge {
 	int edge_num;
 	struct EdgeInfo edges[EDG_MAX];
 };
+
+struct Set {
+	int prt[VER_MAX];
+	int rank[VER_MAX];
+};
 	
 extern void myqSort(void *base, size_t num, size_t width, \
 					int64_t (*cmp)(const void *, const void *));
 extern void chooseEdge(struct Graph *, int, int);
+static void initAllEdge(struct AllEdge *);
+static void findAllEdge(struct Graph *, struct AllEdge *);
+static void makeSet(int, struct Set *);
+static int findSet(int, struct Set *);
+static void unionSet(int, int, struct Set *);
+static void link(int, int, struct Set *);
+static void initMakeSet(struct Graph *, struct Set *);
+static int64_t compare(const void *, const void *);
 
+double kruskal(struct Graph *graph)
+{
+	int i, j;
+	int set1, set2;
+	struct Set set;
+	double ans;
+	struct AllEdge allEdge;
+
+	ans = 0;
+	initAllEdge(&allEdge);
+	findAllEdge(graph, &allEdge);
+	initMakeSet(graph, &set);
+	myqSort(allEdge.edges, allEdge.edge_num, sizeof(struct EdgeInfo), compare);
+
+	for (i = 1, j = 0; i < graph->node_num && j < allEdge.edge_num; i++) {
+		while ((set1 = findSet(allEdge.edges[j].from, &set)) == \
+				(set2 = findSet(allEdge.edges[j].to, &set)))
+			j++;
+		chooseEdge(graph, allEdge.edges[j].from, allEdge.edges[j].to);
+		ans += allEdge.edges[j].weight;
+		unionSet(set1, set2, &set);
+	}
+	return ans;
+}
 
 void initAllEdge(struct AllEdge *allEdge)
 {
@@ -65,54 +102,41 @@ static int64_t compare(const void *elem1, const void *elem2)
 			((struct EdgeInfo *)elem2)->weight;
 }
 
-void makeSet(int pos, int *set)
+void makeSet(int pos, struct Set *set)
 {
-	set[pos] = pos;
+	set->prt[pos] = pos;
 }
 
-int findSet(int pos, int *set)
+int findSet(int pos, struct Set *set)
 {
-	while (pos != set[pos])
-		pos = set[pos];
+	if (pos != set->prt[pos])
+		set->prt[pos] = findSet(set->prt[pos], set);
 
-	return pos;
+	return set->prt[pos];
 }
 
-void unionSet(int pos1, int pos2, int *set)
+void unionSet(int pos1, int pos2, struct Set *set)
 {
-	set[pos1] = findSet(pos2, set);
+	link(findSet(pos1, set), findSet(pos2, set), set);
 }
 
-void initMakeSet(struct Graph *graph, int *set)
+void link(int prt1, int prt2, struct Set *set)
+{
+	if (set->rank[prt1] < set->rank[prt2]) {
+		set->prt[prt1] = prt2;
+	} else {
+		set->prt[prt2] = prt1;
+		if (set->rank[prt1] == set->rank[prt2])
+			set->rank[prt1]++;
+	}
+}
+
+void initMakeSet(struct Graph *graph, struct Set *set)
 {
 	int i;
 
-	for (i = 1; i <= graph->node_num; i++)
+	for (i = 1; i <= graph->node_num; i++) {
 		makeSet(i, set);
-}
-
-double kruskal(struct Graph *graph)
-{
-	int i, j;
-	int set1, set2;
-	int set[VER_MAX];
-	double ans;
-	struct AllEdge allEdge;
-
-	ans = 0;
-	initAllEdge(&allEdge);
-	findAllEdge(graph, &allEdge);
-	initMakeSet(graph, set);
-	myqSort(allEdge.edges, allEdge.edge_num, sizeof(struct EdgeInfo), compare);
-
-	for (i = 1, j = 0; i < graph->node_num && j < allEdge.edge_num; i++) {
-		while ((set1 = findSet(allEdge.edges[j].from, set)) == \
-				(set2 = findSet(allEdge.edges[j].to, set)))
-			j++;
-		chooseEdge(graph, allEdge.edges[j].from, allEdge.edges[j].to);
-		ans += allEdge.edges[j].weight;
-		unionSet(set1, set2, set);
+		set->rank[i] = 1;
 	}
-	return ans;
 }
-	
