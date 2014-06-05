@@ -18,6 +18,7 @@
 
 extern double kruskal(struct Graph *);
 extern double prim(struct Graph *);
+extern double boruvka(struct Graph *);
 
 int main(void)
 {
@@ -28,6 +29,12 @@ int main(void)
 	while (scanf("%d %d", &node_num, &edge_num) != EOF) {
 		initGraph(&graph, node_num);
 		input(&graph, edge_num);
+
+		printf("Boruvka:\n");
+		ans = boruvka(&graph);
+		printf("the MST weigths %2.1f\n", ans);
+		clearChoosedEdge(&graph);
+
 		printf("kruskal:\n");
 		ans = kruskal(&graph);
 		printf("the MST weights %.2lf\n", ans);
