@@ -1,4 +1,4 @@
 ## algorithms
 
-All this code is written in C.
+All code are written in C.
 
